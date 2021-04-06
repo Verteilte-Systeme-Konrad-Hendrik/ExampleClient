@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package Orchestration;
+
+service ClientCommunication {
+    rpc produceMessage (AbstractMessage) returns (RoundNumber);
+
+    rpc publishMessage (AbstractMessage) returns (RoundNumber);
+
+    rpc triggerRound (RoundNumber) returns (Empty);
+
+    rpc pullMessageForRound (RoundNumber) returns (QueueMessageBulk);
+
+    rpc registerListener (Empty) returns (ClientInfo);
+}
+
+service ServerFacingClient {
+    rpc NotifyRoundFinished (RoundNumber) returns (Empty);
+}
+
+message ClientInfo {
+    uint32 port = 1;
+}
+
+message RoundNumber {
+    uint64 round = 1;
+}
+
+message QueueMessageBulk {
+    NodeId sendingNode = 1;
+    uint64 sequence_number = 2;
+    repeated QueueMessage messages = 3;
+}
+
+message QueueMessage {
+    NodeId sender = 1;
+    uint64 sequence_number = 2;
+    bytes message_content = 3;
+}
+
+message Empty {}
+
+message AbstractMessage {
+    bytes message_content = 1;
+}
+
+message NodeId {
+    string nodeId = 1;
+}
